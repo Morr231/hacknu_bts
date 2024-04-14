@@ -1,0 +1,18 @@
+fetch("https://pelican-api.homebank.kz/halykclub-api/v1/dictionary/cities", {
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "accept-language": "ru",
+      "authorization": "Bearer KCF0TK6IPLYHS3B7HBD2CQ",
+      "city_id": "1501",
+      "sec-ch-ua": "\"Google Chrome\";v=\"123\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"Windows\"",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "cross-site",
+      "Referer": "https://halykbank.kz/",
+      "Referrer-Policy": "strict-origin-when-cross-origin"
+    },
+    "body": null,
+    "method": "GET"
+  });

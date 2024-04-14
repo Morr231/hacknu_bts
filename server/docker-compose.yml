@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+    postgres_db:
+        restart: unless-stopped
+        image: postgres:16
+        volumes:
+            - postgres_db:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=${DATABASE__DB}
+            - POSTGRES_USER=${DATABASE__USERNAME}
+            - POSTGRES_PASSWORD=${DATABASE__PASSWORD}
+        env_file:
+            - .env
+        ports:
+            - "${DATABASE__PORT}:5432"
+
+    redis_broker:
+        image: redis:latest
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
+        ports:
+            - "${REDIS__PORT}:6379"
+        env_file:
+            - .env
+
+    my_app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - postgres_db
+            - redis_broker
+        volumes:
+            - ./app:/build/app # Bind mount for app directory
+            - my_app_data:/build
+        ports:
+            - "8000:8000"
+        env_file:
+            - .env
+
+    celery_beat:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./app:/build/app
+        depends_on:
+            - redis_broker
+        command: celery -A app.celery_worker beat --loglevel=info
+        env_file:
+            - .env        
+    
+    celery_worker:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./app:/build/app
+        depends_on:
+            - redis_broker
+        command: celery -A app.celery_worker worker --loglevel=info
+        env_file:
+            - .env
+
+volumes:
+    postgres_db:
+    redis_data:
+    my_app_data:
